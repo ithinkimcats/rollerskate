@@ -40,7 +40,7 @@ public class RetroactiveCmd extends SlashCommand {
             event.reply("I cannot interact with that role. I can only edit roles lower than my highest role.").queue();
             return;
         }
-        if (event.getOption("role").getAsRole().isManaged() || event.getOption("role").getAsRole().getIdLong() == event.getGuild().getIdLong()) {
+        if (event.getOption("role").getAsRole().isManaged() || event.getOption("role").getAsRole().isPublicRole()) {
             event.reply("This role cannot be assigned to a user.").queue();
             return;
         }
