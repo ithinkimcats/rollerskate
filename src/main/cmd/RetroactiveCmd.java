@@ -52,7 +52,8 @@ public class RetroactiveCmd extends SlashCommand {
         } catch (Exception e) {
             event.reply("Database error!").queue();
         }
-        event.reply("Assigned role `" + event.getOption("role").getAsRole().getName() + "` to user `" + event.getOption("user").getAsUser().getName() + "`.").queue();
+        event.reply("Assigned role `" + event.getOption("role").getAsRole().getName() + "` to user `" + event.getOption("user").getAsUser().getName() + "`."
+        + "\nℹ️ This does not add the role to the user; this only assigns the role to the user in the database.").queue();
 
     }
 }
