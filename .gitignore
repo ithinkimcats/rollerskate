@@ -1,0 +1,8 @@
+*.jar
+/Generated/
+/target/
+/.idea/
+/logs/
+*.iml
+config.conf
+nb*.xml
