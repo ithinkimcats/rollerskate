@@ -11,7 +11,9 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.managers.GuildManager;
 import net.dv8tion.jda.api.managers.RoleManager;
+import net.dv8tion.jda.internal.handle.GuildSetupController;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -130,6 +132,7 @@ public class CreateRoleCmd extends SlashCommand {
 
         CustomRole r = database.getRoleByUser(event.getUser().getIdLong());
         Role newRole = event.getGuild().getRoleById(r.getRole());
+        event.getGuild().modifyRolePositions(true).selectPosition(newRole).moveTo(39).queue();
         try {
             event.getGuild().addRoleToMember(event.getMember(), newRole).reason("Automatic assignment of custom role.").queue();
         } catch (Exception e) {
