@@ -13,9 +13,9 @@ public class DeleteRoleCmd extends SlashCommand {
     private final Config config;
     DatabaseHandler database;
     public DeleteRoleCmd(Config config) {
-        this.name = "remove";
+        this.name = "delete";
         this.config = config;
-        this.help = "removes role";
+        this.help = "deletes role associated with user";
         this.database = new DatabaseHandler();
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.USER, "user", "user").setRequired(true));
