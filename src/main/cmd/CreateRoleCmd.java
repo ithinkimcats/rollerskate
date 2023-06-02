@@ -1,3 +1,4 @@
+import com.jagrosh.jdautilities.command.CooldownScope;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.typesafe.config.Config;
@@ -26,6 +27,8 @@ public class CreateRoleCmd extends SlashCommand {
         this.name = "role";
         this.help = "create role, or edit if it already exists";
         this.database = new DatabaseHandler();
+        this.cooldown = 10;
+        this.cooldownScope = CooldownScope.USER;
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.STRING, "name", "role name").setRequired(false).setMaxLength(32).setMinLength(2));
         options.add(new OptionData(OptionType.STRING, "color", "hex color").setRequired(false).setMaxLength(32).setMinLength(2));

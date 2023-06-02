@@ -1,3 +1,4 @@
+import com.jagrosh.jdautilities.command.CooldownScope;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.typesafe.config.Config;
@@ -17,6 +18,8 @@ public class DeleteRoleCmd extends SlashCommand {
         this.config = config;
         this.help = "deletes role associated with user";
         this.database = new DatabaseHandler();
+        this.cooldown = 10;
+        this.cooldownScope = CooldownScope.USER;
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.USER, "user", "user").setRequired(true));
         this.options = options;

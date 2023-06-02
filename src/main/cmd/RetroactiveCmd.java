@@ -1,3 +1,4 @@
+import com.jagrosh.jdautilities.command.CooldownScope;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.typesafe.config.Config;
@@ -15,11 +16,17 @@ public class RetroactiveCmd extends SlashCommand {
     public RetroactiveCmd(Config config) {
         this.name = "assign";
         this.help = "assign role to user, for backwards compatibility";
+        this.cooldown = 10;
+        this.cooldownScope = CooldownScope.USER;
         options.add(new OptionData(OptionType.USER, "user", "user").setRequired(true));
         options.add(new OptionData(OptionType.ROLE, "role", "role").setRequired(true));
     }
 
     public void execute(SlashCommandEvent event) {
+        if (event.getOption("user").getAsUser().isBot()) {
+            event.reply("Roles cannot be assigned to bots.").queue();
+            return;
+        }
         if (!event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
             event.reply("You do not have the Manage Roles permission.").queue();
             return;
