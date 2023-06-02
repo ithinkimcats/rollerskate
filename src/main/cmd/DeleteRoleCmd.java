@@ -53,7 +53,7 @@ public class DeleteRoleCmd extends SlashCommand {
             event.reply("Role assigned to `" + event.getOption("user").getAsUser().getId() + "` not found.").queue();
         } else {
             database.deleteRole(role);
-            if (event.getOption("delete").getAsBoolean() && event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
+            if (event.getOption("delete").getAsBoolean()) {
                 try {
                     custom.delete().queue();
                 } catch (Exception e) {
