@@ -23,7 +23,7 @@ public class CreateRoleCmd extends SlashCommand {
 
     public CreateRoleCmd(Config config) {
         this.config = config;
-        this.name = "create";
+        this.name = "role";
         this.help = "create role, or edit if it already exists";
         this.database = new DatabaseHandler();
         List<OptionData> options = new ArrayList<>();
