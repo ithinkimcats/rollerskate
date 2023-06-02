@@ -16,6 +16,7 @@ public class RetroactiveCmd extends SlashCommand {
     public RetroactiveCmd(Config config) {
         this.name = "assign";
         this.help = "assign role to user, for backwards compatibility";
+        this.config = config;
         this.cooldown = 10;
         this.cooldownScope = CooldownScope.USER;
         options.add(new OptionData(OptionType.USER, "user", "user").setRequired(true));
@@ -27,7 +28,7 @@ public class RetroactiveCmd extends SlashCommand {
             event.reply("Roles cannot be assigned to bots.").queue();
             return;
         }
-        if (!event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
+        if (!event.getMember().hasPermission(Permission.MANAGE_ROLES) && !event.getUser().getId().equals(config.getString("bot.owner"))) {
             event.reply("You do not have the Manage Roles permission.").queue();
             return;
         }

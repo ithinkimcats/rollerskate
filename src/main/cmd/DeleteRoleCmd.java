@@ -16,12 +16,13 @@ public class DeleteRoleCmd extends SlashCommand {
     public DeleteRoleCmd(Config config) {
         this.name = "delete";
         this.config = config;
-        this.help = "deletes role associated with user";
+        this.help = "removes association of role with user";
         this.database = new DatabaseHandler();
         this.cooldown = 10;
         this.cooldownScope = CooldownScope.USER;
         List<OptionData> options = new ArrayList<>();
         options.add(new OptionData(OptionType.USER, "user", "user").setRequired(true));
+        options.add(new OptionData(OptionType.BOOLEAN, "delete", "delete role").setRequired(true));
         this.options = options;
     }
 
@@ -52,7 +53,13 @@ public class DeleteRoleCmd extends SlashCommand {
             event.reply("Role assigned to `" + event.getOption("user").getAsUser().getId() + "` not found.").queue();
         } else {
             database.deleteRole(role);
-            custom.delete().queue();
+            if (event.getOption("delete").getAsBoolean()) {
+                try {
+                    custom.delete().queue();
+                } catch (Exception e) {
+                    event.reply("Error deleting role! Role may no longer exist on the guild.").queue();
+                }
+            }
             event.reply("Role assigned to `" + event.getOption("user").getAsUser().getId() + "` successfully removed.").queue();
         }
     }
