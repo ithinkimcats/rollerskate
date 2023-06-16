@@ -81,9 +81,14 @@ public class CreateRoleCmd extends SlashCommand {
         Role createdRole = null;
         for (CustomRole r : database.getRoles()) {
             if (event.getUser().getIdLong() == r.getUser()) {
-                if (!event.getGuild().getSelfMember().canInteract(event.getGuild().getRoleById(r.getRole()))) {
-                    event.getHook().editOriginal("I cannot interact with that role. I can only edit roles lower than my highest role.").queue();
+                if (event.getGuild().getRoleById(r.getRole()) == null) {
+                    event.getHook().editOriginal("Unable to find role with ID: `" + r.getRole() + "`").queue();
                     return;
+                } else {
+                    if (!event.getGuild().getSelfMember().canInteract(event.getGuild().getRoleById(r.getRole()))) {
+                        event.getHook().editOriginal("I cannot interact with that role. I can only edit roles lower than my highest role.").queue();
+                        return;
+                    }
                 }
                 RoleManager rm = event.getGuild().getRoleById(r.getRole()).getManager();
                 if (roleName == null && roleColor == null) {
