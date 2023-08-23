@@ -1,7 +1,11 @@
+package main.cmd;
+
 import com.jagrosh.jdautilities.command.CooldownScope;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.typesafe.config.Config;
+import main.utils.CustomRole;
+import main.utils.DatabaseHandler;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;

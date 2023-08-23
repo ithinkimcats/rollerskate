@@ -1,3 +1,5 @@
+package main.utils;
+
 import jakarta.persistence.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;

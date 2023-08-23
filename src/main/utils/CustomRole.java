@@ -1,3 +1,4 @@
+package main.utils;
 import jakarta.persistence.*;
 
 @Entity

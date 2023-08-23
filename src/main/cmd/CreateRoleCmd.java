@@ -1,8 +1,12 @@
+package main.cmd;
+
 import com.jagrosh.jdautilities.command.CooldownScope;
 import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.typesafe.config.Config;
 import jakarta.persistence.Embeddable;
+import main.utils.CustomRole;
+import main.utils.DatabaseHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
