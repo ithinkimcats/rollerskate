@@ -1,25 +1,18 @@
 package main.utils;
 
 import main.java.Main;
-import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.UserSnowflake;
-import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
 import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.session.ReadyEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-
 public class VoiceParticipantHandler {
 
     long guildID = Long.parseLong(Main.guildID);
@@ -44,6 +37,8 @@ public class VoiceParticipantHandler {
             if (v.getIdLong() == modID)
                 continue;
             for (Member m : v.getMembers()) {
+                if (m.getUser().isBot())
+                    return;
                 inVoice.add(m);
                 addRole(event, m.getIdLong(), voiceRole, "[startup]");
             }
@@ -51,6 +46,8 @@ public class VoiceParticipantHandler {
 
         guild.loadMembers().onSuccess(members -> {
             for (Member m : members) {
+                if (m.getUser().isBot())
+                    continue;
                 if (m.getRoles().contains(voiceRole) && !inVoice.contains(m)) {
                     System.out.print(m.getId() + "\n");
                     removeRole(event, m.getIdLong(), voiceRole, "[startup]");
