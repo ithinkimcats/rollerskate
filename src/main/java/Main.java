@@ -19,7 +19,7 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import java.util.List;
 
 public class Main {
-    static String guildID = "194167041685454848";
+    public static String guildID = "194167041685454848";
     static VoiceParticipantHandler voiceParticipantHandler = new VoiceParticipantHandler();
     public static void main(String[] args) throws Exception
     {

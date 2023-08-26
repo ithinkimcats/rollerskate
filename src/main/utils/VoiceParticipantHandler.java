@@ -1,5 +1,6 @@
 package main.utils;
 
+import main.java.Main;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -9,38 +10,104 @@ import net.dv8tion.jda.api.entities.channel.Channel;
 import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.events.GenericEvent;
 import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class VoiceParticipantHandler {
+
+    long guildID = Long.parseLong(Main.guildID);
     long roleID = 1143788097021165619L;
+    long modID = 221721509087936523L;
 
-    public void addOrRemoveRole(GuildVoiceUpdateEvent event) {
-        Guild guild = event.getGuild();
-        Role voiceRole = guild.getRoleById(roleID);
-
-        if (event.getChannelJoined() != null && event.getChannelJoined().getId().equals("221721509087936523"))
+    public void checkVoiceOnStartup(ReadyEvent event) {
+        Guild guild = event.getJDA().getGuildById(guildID);
+        if (guild == null) {
+            System.out.print("Guild null!");
             return;
+        }
+        Role voiceRole = getVoiceRole(event);
+        if (voiceRole == null) {
+            return;
+        }
 
+        List<VoiceChannel> voiceChannelList = guild.getVoiceChannels();
+        List<Member> inVoice = new ArrayList<>();
+
+        for (VoiceChannel v : voiceChannelList) {
+            if (v.getIdLong() == modID)
+                continue;
+            for (Member m : v.getMembers()) {
+                inVoice.add(m);
+                addRole(event, m.getIdLong(), voiceRole, "[startup]");
+            }
+        }
+
+        guild.loadMembers().onSuccess(members -> {
+            for (Member m : members) {
+                if (m.getRoles().contains(voiceRole) && !inVoice.contains(m)) {
+                    System.out.print(m.getId() + "\n");
+                    removeRole(event, m.getIdLong(), voiceRole, "[startup]");
+                }
+            }
+        });
+    }
+
+    public Role getVoiceRole(GenericEvent event) {
+        Guild guild = event.getJDA().getGuildById(guildID);
+        Role voiceRole = guild.getRoleById(roleID);
         if (voiceRole == null) {
             guild.getChannelById(TextChannel.class, "287626728828829696").sendMessage("ℹ️ Voice role missing! Searching for another role to assign temporarily!").queue();
             for (Role r : guild.getRoles()) {
                 if (r.getName().equalsIgnoreCase("in voice"))
-                        voiceRole = r;
+                    voiceRole = r;
             }
         }
 
         if (voiceRole == null) {
             guild.getChannelById(TextChannel.class, "287626728828829696").sendMessage("ℹ️ No roles named \"In Voice\". Cannot assign role!").queue();
+            return null;
+        }
+        return voiceRole;
+    }
+
+    public void addRole(GenericEvent event, long id, Role role, String reason) {
+        Guild guild = event.getJDA().getGuildById(guildID);
+
+        guild.addRoleToMember(UserSnowflake.fromId(id), role).reason("Adding voice role" + " " + reason).queue();
+    }
+
+    public void removeRole(GenericEvent event, long id, Role role, String reason) {
+        Guild guild = event.getJDA().getGuildById(guildID);
+
+        guild.removeRoleFromMember(UserSnowflake.fromId(id), role).reason("Removing voice role" + " " + reason).queue();
+    }
+
+    public void manageParticipants(GuildVoiceUpdateEvent event) {
+        Guild guild = event.getGuild();
+        Role voiceRole = getVoiceRole(event);
+
+        if (voiceRole == null) {
             return;
         }
-        if (event.getNewValue() != null) {
-            guild.addRoleToMember(UserSnowflake.fromId(event.getMember().getIdLong()), voiceRole).reason("Adding voice role").queue();
+
+        if (guild.getIdLong() != guildID) {
+            return;
+        }
+
+        if (event.getChannelJoined() != null && event.getChannelJoined().getIdLong() == modID)
+            return;
+
+        if (event.getNewValue() != null && event.getNewValue().getIdLong() != modID) {
+            addRole(event, event.getMember().getIdLong(), voiceRole, "[voice join]");
         } else {
-            guild.removeRoleFromMember(UserSnowflake.fromId(event.getMember().getIdLong()), voiceRole).reason("Removing voice role").queue();
+            removeRole(event, event.getMember().getIdLong(), voiceRole, "[voice leave]");
         }
     }
 }
