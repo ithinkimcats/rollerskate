@@ -25,8 +25,9 @@ public class Bot extends ListenerAdapter implements EventListener {
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent event) {
-
-        if (event.getMember().getUser().isBot())
+        if (!event.getMessage().getChannel().asTextChannel().canTalk(event.getGuild().getSelfMember()))
+            return;
+        if (event.getMember() == null || event.getAuthor().isBot() || event.getAuthor().isSystem())
             return;
         if (event.getMessage().getContentRaw().contains("https") || event.getMessage().getContentRaw().contains("http"))
             linkEmbedConverterHandler.handleMessageEvent(event);
