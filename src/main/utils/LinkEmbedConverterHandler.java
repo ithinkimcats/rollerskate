@@ -1,6 +1,7 @@
 package main.utils;
 
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 
@@ -52,7 +53,8 @@ public class LinkEmbedConverterHandler {
             return;
         }
 
-        TextChannel tc = event.getMessage().getChannel().asTextChannel();
+        MessageChannel mc = event.getChannel();
+
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("\n\uD83D\uDD17" + " ").append(convertedLink);
@@ -60,7 +62,7 @@ public class LinkEmbedConverterHandler {
         MessageCreateBuilder messageCreateBuilder = new MessageCreateBuilder();
         messageCreateBuilder.addContent(stringBuilder.toString());
         messageCreateBuilder.setAllowedMentions(null);
-        tc.sendMessage(messageCreateBuilder.build()).setMessageReference(event.getMessage()).mentionRepliedUser(false).queue();
+        mc.sendMessage(messageCreateBuilder.build()).setMessageReference(event.getMessage()).mentionRepliedUser(false).queue();
     }
 
     public String convertLink(String string) {

@@ -16,8 +16,8 @@ import java.util.List;
 public class VoiceParticipantHandler {
 
     long guildID = Long.parseLong(Main.guildID);
-    long roleID = 1143788097021165619L;
-    long modID = 221721509087936523L;
+    long roleID = Long.parseLong(Main.voiceRoleID);
+    long modID = Long.parseLong(Main.modID);
 
     public void checkVoiceOnStartup(ReadyEvent event) {
         Guild guild = event.getJDA().getGuildById(guildID);

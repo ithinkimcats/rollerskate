@@ -63,13 +63,15 @@ public class CreateRoleCmd extends SlashCommand {
         }
 
         String roleName = null;
+        List<String> bannedNames = config.getStringList("data.blockedRoleNames");
         if (nameString != null) {
-            if (nameString.contains("moderator") || nameString.contains("admin") || nameString.contains("everyone") || nameString.contains("here") || nameString.contains(event.getGuild().getName())) {
-                event.getHook().editOriginal("Role name invalid. Try again.").queue();
-                return;
-            } else {
-                roleName = nameString;
+            for (String s : bannedNames) {
+                if (nameString.contains(s) || nameString.contains(event.getGuild().getName())) {
+                    event.getHook().editOriginal("Role name invalid. Try again.").queue();
+                    return;
+                }
             }
+            roleName = nameString;
         }
         Color roleColor = null;
         if (colorString != null) {
