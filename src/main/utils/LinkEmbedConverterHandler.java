@@ -16,6 +16,8 @@ public class LinkEmbedConverterHandler {
     private enum DomainType {
         X("x.com", twitter),
         TWITTER("twitter.com", twitter),
+
+        TIKTOK2("vt.tiktok.com", tiktok),
         TIKTOK("tiktok.com", tiktok),
         INSTAGRAM("instagram.com", instagram);
 //        PIXIV("pixiv.net", pixiv);
@@ -35,7 +37,7 @@ public class LinkEmbedConverterHandler {
     };
 
     private static final String[] tiktok = {
-            "vxtiktok.com"
+            "vt.vxtiktok.com",
     };
 
     private static final String[] instagram = {
