@@ -38,7 +38,7 @@ public class DeleteRoleCmd extends SlashCommand {
         }
         CustomRole role = null;
         try {
-            role = database.getRoleByUser(event.getOption("user").getAsUser().getIdLong());
+            role = database.getRoleByUser(event.getOption("user").getAsUser().getIdLong(), event.getGuild().getIdLong());
         } catch (Exception e) {
             e.printStackTrace();
             event.reply("Database error getting role assigned to `" + event.getOption("user").getAsUser().getId() + "`.").queue();
@@ -49,7 +49,7 @@ public class DeleteRoleCmd extends SlashCommand {
             return;
         }
         Role custom = event.getGuild().getRoleById(role.getRole());
-        if (role.getUser() != event.getUser().getIdLong() || event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
+        if (role.getUser() != event.getUser().getIdLong() || !event.getMember().hasPermission(Permission.MANAGE_ROLES)) {
             event.reply("You do not own this role, or do not have the Manage Roles permission.").queue();
             return;
         }

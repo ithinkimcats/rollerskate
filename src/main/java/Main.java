@@ -38,7 +38,6 @@ public class Main {
         builder.setStatus(OnlineStatus.IDLE);
         builder.setActivity(null);
         builder.setPrefix(config.getString("bot.prefix"));
-        builder.forceGuildOnly(guildID);
         builder.addSlashCommand(new CreateRoleCmd(config));
         builder.addSlashCommand(new DeleteRoleCmd(config));
         builder.addSlashCommand(new RetroactiveCmd(config));

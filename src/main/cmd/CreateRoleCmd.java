@@ -5,6 +5,7 @@ import com.jagrosh.jdautilities.command.SlashCommand;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.typesafe.config.Config;
 import jakarta.persistence.Embeddable;
+import main.java.Main;
 import main.utils.CustomRole;
 import main.utils.DatabaseHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -76,7 +77,8 @@ public class CreateRoleCmd extends SlashCommand {
         Color roleColor = null;
         if (colorString != null) {
             try {
-                roleColor = Color.decode(event.getOption("color").getAsString());
+                if (!event.getOption("color").getAsString().contains("#"))
+                    roleColor = Color.decode("#" + event.getOption("color").getAsString());
             } catch (Exception e) {
                 event.getHook().editOriginal("Color could not be parsed. Color must be in HEX format.").queue();
                 return;
@@ -85,7 +87,7 @@ public class CreateRoleCmd extends SlashCommand {
 
         CustomRole role = new CustomRole();
         Role createdRole = null;
-        for (CustomRole r : database.getRoles()) {
+        for (CustomRole r : database.getRoles(event.getGuild().getIdLong())) {
             if (event.getUser().getIdLong() == r.getUser()) {
                 if (event.getGuild().getRoleById(r.getRole()) == null) {
                     event.getHook().editOriginal("Unable to find role with ID: `" + r.getRole() + "`").queue();
@@ -135,15 +137,17 @@ public class CreateRoleCmd extends SlashCommand {
         if (createdRole != null) {
             role.setUser(event.getUser().getIdLong());
             role.setRole(createdRole.getIdLong());
+            role.setGuild(event.getGuild().getIdLong());
             database.saveRole(role);
             event.getHook().editOriginal("Role created under name `" + createdRole.getName() + "`!").queue();
         } else {
             return;
         }
 
-        CustomRole r = database.getRoleByUser(event.getUser().getIdLong());
+        CustomRole r = database.getRoleByUser(event.getUser().getIdLong(), event.getGuild().getIdLong());
         Role newRole = event.getGuild().getRoleById(r.getRole());
-        event.getGuild().modifyRolePositions(true).selectPosition(newRole).moveTo(39).queue();
+        if (event.getGuild().getId().equals(Main.guildID))
+            event.getGuild().modifyRolePositions(true).selectPosition(newRole).moveTo(39).queue();
         try {
             event.getGuild().addRoleToMember(event.getMember(), newRole).reason("Automatic assignment of custom role.").queue();
         } catch (Exception e) {

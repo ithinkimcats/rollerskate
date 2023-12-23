@@ -51,6 +51,7 @@ public class RetroactiveCmd extends SlashCommand {
         CustomRole role = new CustomRole();
         role.setUser(event.getOption("user").getAsUser().getIdLong());
         role.setRole(event.getOption("role").getAsRole().getIdLong());
+        role.setGuild(event.getGuild().getIdLong());
         try {
             database.saveRole(role);
         } catch (Exception e) {

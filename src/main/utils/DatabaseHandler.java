@@ -37,17 +37,19 @@ public class DatabaseHandler {
         }
     }
 
-    public List<CustomRole> getRoles() {
+    public List<CustomRole> getRoles(long guild) {
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            return session.createQuery("from CustomRole", CustomRole.class).list();
+            Query query = session.createQuery("from CustomRole C WHERE C.guild = :guildid");
+            query.setParameter("guildid", guild);
+            return query.getResultList();
         }
     }
 
-    public CustomRole getRoleByUser(long id) {
+    public CustomRole getRoleByUser(long user, long guild) {
         CustomRole role = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
-            Query query = session.createQuery("from CustomRole C WHERE C.user = :userid");
-            query.setParameter("userid", id);
+            Query query = session.createQuery("from CustomRole C WHERE C.user = :userid AND C.guild = :guildid");
+            query.setParameter("userid", user).setParameter("guildid", guild);
             role = (CustomRole) query.getSingleResult();
             return role;
         } catch (Exception ignored) {
