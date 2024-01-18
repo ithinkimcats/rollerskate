@@ -23,6 +23,35 @@ public class DatabaseHandler {
         }
     }
 
+    public void savePoll(Poll poll) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.merge(poll);
+            transaction.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
+    public void deletePoll(Poll poll) {
+        Transaction transaction = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.remove(poll);
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
+    }
+
     public void deleteRole(CustomRole role) {
         Transaction transaction = null;
         try (Session session = HibernateUtil.getSessionFactory().openSession()) {
@@ -56,5 +85,28 @@ public class DatabaseHandler {
 
         }
         return role;
+    }
+
+    public Poll getPollByMessage(long message, long guild) {
+        Poll poll = null;
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query query = session.createQuery("from Poll AS P WHERE P.message = :messageid AND P.guild = :guildid");
+            query.setParameter("messageid", message).setParameter("guildid", guild);
+            poll = (Poll) query.getSingleResult();
+            return poll;
+        } catch (Exception ignored) {
+
+        }
+        return poll;
+    }
+
+    public List<Poll> getPolls(long guild) {
+        try (Session session = HibernateUtil.getSessionFactory().openSession()) {
+            Query query = session.createQuery("from Poll C WHERE C.guild = :guildid");
+            query.setParameter("guildid", guild);
+            return query.getResultList();
+        } catch (Exception ignored) {
+            return null;
+        }
     }
 }

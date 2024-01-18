@@ -7,11 +7,10 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigObject;
 import com.typesafe.config.ConfigValue;
-import main.cmd.CreateRoleCmd;
-import main.cmd.DeleteRoleCmd;
-import main.cmd.PronounCmd;
-import main.cmd.RetroactiveCmd;
+import main.cmd.*;
 import main.utils.LinkEmbedConverterHandler;
+import main.utils.Poll;
+import main.utils.PollHandler;
 import main.utils.VoiceParticipantHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -29,9 +28,10 @@ public class Main {
     public static String modID = config.getString("data.modid");
     static VoiceParticipantHandler voiceParticipantHandler = new VoiceParticipantHandler();
     static LinkEmbedConverterHandler linkEmbedConverterHandler = new LinkEmbedConverterHandler();
+    static PollHandler pollHandler = new PollHandler();
     public static void main(String[] args) throws Exception
     {
-        EventListener eventListener = new Bot(voiceParticipantHandler, linkEmbedConverterHandler);
+        EventListener eventListener = new Bot(voiceParticipantHandler, linkEmbedConverterHandler, pollHandler);
         EventWaiter waiter = new EventWaiter();
         CommandClientBuilder builder = new CommandClientBuilder();
         builder.setOwnerId(config.getString("bot.owner"));
@@ -42,6 +42,7 @@ public class Main {
         builder.addSlashCommand(new DeleteRoleCmd(config));
         builder.addSlashCommand(new RetroactiveCmd(config));
         builder.addSlashCommand(new PronounCmd(config));
+        builder.addSlashCommand(new PollCmd(config, pollHandler));
         CommandClient commandClient = builder.build();
         JDA jda = JDABuilder.createDefault(config.getString("bot.token")).addEventListeners(eventListener).enableCache(CacheFlag.VOICE_STATE).enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES).addEventListeners(commandClient).build();
     }
