@@ -26,7 +26,7 @@ public class PollCmd extends SlashCommand {
         this.config = config;
         this.ph = ph;
         List<OptionData> options = new ArrayList<>();
-        options.add(new OptionData(OptionType.STRING, "question", "poll question").setRequired(true).setMaxLength(32).setMinLength(2));
+        options.add(new OptionData(OptionType.STRING, "question", "poll question").setRequired(true).setMaxLength(256).setMinLength(2));
         options.add(new OptionData(OptionType.STRING, "choice1", "choice1").setRequired(true).setMaxLength(32).setMinLength(2));
         options.add(new OptionData(OptionType.STRING, "choice2", "choice2").setRequired(true).setMaxLength(32).setMinLength(2));
         options.add(new OptionData(OptionType.STRING, "color1", "color1").setRequired(true).setMaxLength(32).setMinLength(2));

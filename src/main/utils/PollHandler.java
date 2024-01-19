@@ -1,5 +1,6 @@
 package main.utils;
 
+import com.jagrosh.jdautilities.command.MessageContextMenuEvent;
 import com.jagrosh.jdautilities.command.SlashCommandEvent;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -11,6 +12,8 @@ import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.component.ButtonInteractionEvent;
 import net.dv8tion.jda.api.events.message.MessageDeleteEvent;
+import net.dv8tion.jda.api.interactions.components.ItemComponent;
+import net.dv8tion.jda.api.interactions.components.LayoutComponent;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import net.dv8tion.jda.api.managers.RoleManager;
 import net.dv8tion.jda.api.utils.AttachedFile;
@@ -82,6 +85,38 @@ public class PollHandler {
         } catch (Exception e) {
             e.printStackTrace();
             event.getGuild().getChannelById(TextChannel.class, "287626728828829696").sendMessage("ℹ️ Error when getting poll roles!").queue();
+        }
+    }
+
+    public void deletePoll(MessageContextMenuEvent event) {
+        try {
+            Poll poll = null;
+            for (Poll p : db.getPolls(event.getGuild().getIdLong())) {
+                if (p.getMessage() == event.getTarget().getIdLong()) {
+                    poll = p;
+                    break;
+                }
+            }
+            if (poll == null) {
+                return;
+            }
+            List<Member> members = new ArrayList<>();
+            for (long l : poll.getChoice1Voters()) {
+                members.add(event.getGuild().retrieveMemberById(l).complete());
+            }
+            for (long l : poll.getChoice2Voters()) {
+                members.add(event.getGuild().retrieveMemberById(l).complete());
+            }
+            for (Member m : members) {
+                event.getGuild().removeRoleFromMember(m.getUser(), event.getGuild().getRoleById(config.getString("data.pollrole1"))).queue();
+                event.getGuild().removeRoleFromMember(m.getUser(), event.getGuild().getRoleById(config.getString("data.pollrole2"))).queue();
+            }
+            List<LayoutComponent> empty = new ArrayList<>();
+            event.getTarget().editMessageComponents(empty).queue();
+            db.deletePoll(poll);
+        } catch (Exception e) {
+            System.out.print("\n" + "errdel : " + event.getTarget().getIdLong());
+            e.printStackTrace();
         }
     }
 

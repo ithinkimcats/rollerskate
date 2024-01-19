@@ -43,6 +43,7 @@ public class Main {
         builder.addSlashCommand(new RetroactiveCmd(config));
         builder.addSlashCommand(new PronounCmd(config));
         builder.addSlashCommand(new PollCmd(config, pollHandler));
+        builder.addContextMenu(new PollDetachContextMenu(pollHandler));
         CommandClient commandClient = builder.build();
         JDA jda = JDABuilder.createDefault(config.getString("bot.token")).addEventListeners(eventListener).enableCache(CacheFlag.VOICE_STATE).enableIntents(GatewayIntent.MESSAGE_CONTENT, GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_VOICE_STATES).addEventListeners(commandClient).build();
     }
