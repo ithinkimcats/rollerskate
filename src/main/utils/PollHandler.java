@@ -61,31 +61,12 @@ public class PollHandler {
                 poll.setColor1("#" + event.getOption("color1").getAsString());
                 poll.setColor2("#" + event.getOption("color2").getAsString());
                 db.savePoll(poll);
-                createRoles(event, poll);
             });
         } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
         return true;
-    }
-
-    public void createRoles(SlashCommandEvent event, Poll poll) {
-        try {
-            Role r1 = event.getGuild().getRoleById(config.getString("data.pollrole1"));
-            Role r2 = event.getGuild().getRoleById(config.getString("data.pollrole2"));
-            RoleManager rm1 = r1.getManager();
-            RoleManager rm2 = r2.getManager();
-            rm1.setName(event.getOption("choice1").getAsString());
-            rm2.setName(event.getOption("choice2").getAsString());
-            rm1.setColor(Color.decode(poll.getColor1()));
-            rm2.setColor(Color.decode(poll.getColor2()));
-            rm1.queue();
-            rm2.queue();
-        } catch (Exception e) {
-            e.printStackTrace();
-            event.getGuild().getChannelById(TextChannel.class, "287626728828829696").sendMessage("ℹ️ Error when getting poll roles!").queue();
-        }
     }
 
     public void deletePoll(MessageContextMenuEvent event) {
@@ -99,17 +80,6 @@ public class PollHandler {
             }
             if (poll == null) {
                 return;
-            }
-            List<Member> members = new ArrayList<>();
-            for (long l : poll.getChoice1Voters()) {
-                members.add(event.getGuild().retrieveMemberById(l).complete());
-            }
-            for (long l : poll.getChoice2Voters()) {
-                members.add(event.getGuild().retrieveMemberById(l).complete());
-            }
-            for (Member m : members) {
-                event.getGuild().removeRoleFromMember(m.getUser(), event.getGuild().getRoleById(config.getString("data.pollrole1"))).queue();
-                event.getGuild().removeRoleFromMember(m.getUser(), event.getGuild().getRoleById(config.getString("data.pollrole2"))).queue();
             }
             List<LayoutComponent> empty = new ArrayList<>();
             event.getTarget().editMessageComponents(empty).queue();
@@ -132,17 +102,6 @@ public class PollHandler {
             if (poll == null) {
                 return;
             }
-            List<Member> members = new ArrayList<>();
-            for (long l : poll.getChoice1Voters()) {
-                members.add(event.getGuild().retrieveMemberById(l).complete());
-            }
-            for (long l : poll.getChoice2Voters()) {
-                members.add(event.getGuild().retrieveMemberById(l).complete());
-            }
-            for (Member m : members) {
-                event.getGuild().removeRoleFromMember(m.getUser(), event.getGuild().getRoleById(config.getString("data.pollrole1"))).queue();
-                event.getGuild().removeRoleFromMember(m.getUser(), event.getGuild().getRoleById(config.getString("data.pollrole2"))).queue();
-            }
             db.deletePoll(poll);
         } catch (Exception e) {
             System.out.print("\n" + "errdel : " + event.getMessageIdLong());
@@ -161,8 +120,6 @@ public class PollHandler {
             event.reply("You have already voted for this choice.").setEphemeral(true).queue();
             return;
         }
-        Role r1 = event.getGuild().getRoleById(config.getString("data.pollrole1"));
-        Role r2 = event.getGuild().getRoleById(config.getString("data.pollrole2"));
         // switch vote
         if (voters1.contains(user) && button.equals("poll-choice2")) {
             try {
@@ -171,8 +128,6 @@ public class PollHandler {
                 poll.setChoice1Voters(voters1);
                 poll.setChoice2Voters(voters2);
                 db.savePoll(poll);
-                event.getGuild().removeRoleFromMember(event.getMember(), r1).reason("Poll role assignment").queue();
-                event.getGuild().addRoleToMember(event.getMember(), r2).reason("Poll role assignment").queue();
                 event.reply("Switching vote to Choice 2...").setEphemeral(true).queue();
                 updateMessage(event);
             } catch (Exception e) {
@@ -188,8 +143,6 @@ public class PollHandler {
                 poll.setChoice1Voters(voters1);
                 poll.setChoice2Voters(voters2);
                 db.savePoll(poll);
-                event.getGuild().removeRoleFromMember(event.getMember(), r2).reason("Poll role assignment").queue();
-                event.getGuild().addRoleToMember(event.getMember(), r1).reason("Poll role assignment").queue();
                 event.reply("Switching vote to Choice 1...").setEphemeral(true).queue();
                 updateMessage(event);
             } catch (Exception e) {
@@ -205,7 +158,6 @@ public class PollHandler {
                     voters1.add(user);
                     poll.setChoice1Voters(voters1);
                     event.deferReply().queue(d -> d.deleteOriginal().queue());
-                    event.getGuild().addRoleToMember(event.getMember(), r1).reason("Poll role assignment").queue();
                     db.savePoll(poll);
                     updateMessage(event);
                 }
@@ -213,7 +165,6 @@ public class PollHandler {
                     voters2.add(user);
                     poll.setChoice2Voters(voters2);
                     event.deferReply().queue(d -> d.deleteOriginal().queue());
-                    event.getGuild().addRoleToMember(event.getMember(), r2).reason("Poll role assignment").queue();
                     db.savePoll(poll);
                     updateMessage(event);
                 }
